@@ -17,10 +17,10 @@ on:
       ssh:
         description: 'SSH connection to Actions'
         required: false
-        default: 'false'
-
+        default: 'false'        
+        
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_URL: https://github.com/x-wrt/x-wrt
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
@@ -30,7 +30,7 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
-  UPLOAD_RELEASE: false
+  UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
 jobs:
@@ -67,9 +67,13 @@ jobs:
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
-
+      
+    - name: Update tags to newest
+      run: cd openwrt && git describe --tags $(git rev-list --tags --max-count=1)
+      
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
+
 
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
